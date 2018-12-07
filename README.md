@@ -1,10 +1,10 @@
 # Movie Predicator
 
-##Introduction
+## Introduction
 
 This competition is organized in the context of the "introduction to Machine Learning" course (ELEN0062) at the University of Liège, Belgium. The goal of the competition is to let you apply the methods and principles exposed in the theoretical course in order to address a real problem: Predict the rating of a movie by a user. 
 
-##Task
+## Task
 
 The mission of your group, should you decide to accept it, is to use (supervised) learning techniques to design an algorithm that can predict the rating given by a user to a movie.
 
