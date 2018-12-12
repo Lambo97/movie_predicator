@@ -185,7 +185,7 @@ if __name__ == '__main__':
     y_ls = training_labels
     start = time.time()
     print(rating_matrix.toarray())
-    model = mf(rating_matrix.toarray(), 7, 0.002, 0.02, 5000)
+    model = mf(rating_matrix.toarray(), 10, 0.0002, 0.02, 5000)
 
 
 
