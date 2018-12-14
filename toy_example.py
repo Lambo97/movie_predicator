@@ -12,6 +12,8 @@ import numpy as np
 from scipy import sparse
 from sklearn.neural_network import MLPRegressor
 from mf import MF as mf
+from cross_val import TwoFoldCrossValidation
+from nmf_other import MoviePredicator
 
 
 @contextmanager
@@ -182,18 +184,13 @@ if __name__ == '__main__':
     y_ls = training_labels
     start = time.time()
 
-    print("Factorizing matrx...")
-    matrix = load_from_csv("matrix.csv")
+    model = MoviePredicator(rating_matrix.toarray())
     
-
-    X_ls = create_learning_matrices(matrix, training_user_movie_pairs)
-    model = model = MLPRegressor(hidden_layer_sizes=(20, ),solver='lbfgs', alpha=1e-5, random_state=1)
-
     with measure_time('Training'):
         print('Training...')
-        model.fit(X_ls,y_ls)
+        print(TwoFoldCrossValidation(model, training_user_movie_pairs, y_ls))
 
-
+    """
     # ------------------------------ Prediction ------------------------------ #
     # Load test data
     test_user_movie_pairs = load_from_csv(os.path.join(prefix, 'data_test.csv'))
@@ -207,3 +204,4 @@ if __name__ == '__main__':
     # Making the submission file
     fname = make_submission(y_pred, test_user_movie_pairs, 'Lamborelle_Renaud_Vandegar')
     print('Submission file "{}" successfully written'.format(fname))
+    """

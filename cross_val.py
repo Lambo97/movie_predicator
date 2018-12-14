@@ -15,7 +15,7 @@ def error(model,test_set_data,test_set_output,training_set_data,training_set_out
 	squarred_error = 0
 	for i in range(len(prediction)):
 		squarred_error += (prediction[i]-test_set_output[i])**2
-	return squarred_error
+	return squarred_error/len(test_set_data)
 
 def OneFoldCrossValidation(reg,X,y):
 	separator = int(len(X)/10)

@@ -1,6 +1,7 @@
 import numpy as np
+from sklearn.base import BaseEstimator, ClassifierMixin
 
-class MF():
+class MF(BaseEstimator, ClassifierMixin):
 
     def __init__(self, R, K, alpha, beta, iterations):
         """
@@ -40,14 +41,12 @@ class MF():
         ]
 
         # Perform stochastic gradient descent for number of iterations
-        training_process = []
         for i in range(self.iterations):
             np.random.shuffle(self.samples)
             self.sgd()
             mse = self.mse()
-            training_process.append((i, mse))
 
-        return training_process
+        return self
 
     def mse(self):
         """
@@ -90,7 +89,7 @@ class MF():
         """
         return self.b + self.b_u[:,np.newaxis] + self.b_i[np.newaxis:,] + self.P.dot(self.Q.T)
 
-    def predict(self, X_ts):
+    def predict(self, X_ts, rating_matrix):
         """
         Predict the ratings for all user_id/movie_id ratings
 
@@ -102,9 +101,10 @@ class MF():
         - y_ts : array(n_samples, 1)
                 the ratings for all samples
         """
-        matrix_full = self.full_matrix()
+        #matrix_full = self.full_matrix()
+        matrix_full = rating_matrix
         y_ts = np.zeros((np.shape(X_ts)[0]))
         for i,x in enumerate(X_ts):
-            y_ts[i] = matrix_full[x[0],x[1]]
+            y_ts[i] = matrix_full[x[0]-1,x[1]-1]
 
         return y_ts
