@@ -10,7 +10,7 @@ from contextlib import contextmanager
 import pandas as pd
 import numpy as np
 from scipy import sparse
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.neural_network import MLPRegressor
 from mf import MF as mf
 
 
@@ -95,29 +95,26 @@ def create_learning_matrices(rating_matrix, user_movie_pairs):
 
     Parameters
     ----------
-    rating_matrix: sparse matrix [n_users, n_movies]
+    rating_matrix: matrix [n_users, n_movies]
         The rating matrix. i.e. `rating_matrix[u, m]` is the rating given
-        by the user `u` for the movie `m`. If the user did not give a rating for
-        that movie, `rating_matrix[u, m] = 0`
+        by the user `u` for the movie `m`.
     user_movie_pairs: array [n_predictions, 2]
         If `u, m = user_movie_pairs[i]`, the i-th raw of the learning matrix
         must relate to user `u` and movie `m`
 
     Return
     ------
-    X: sparse array [n_predictions, n_users + n_movies]
+    X: array [n_predictions, n_users + n_movies]
         The learning matrix in csr sparse format
     """
     # Feature for users
-    rating_matrix = rating_matrix.tocsr()
-    user_features = rating_matrix[user_movie_pairs[:, 0]]
+    user_features = rating_matrix[user_movie_pairs[:, 0]-1]
 
     # Features for movies
-    rating_matrix = rating_matrix.tocsc()
     movie_features = rating_matrix[:, user_movie_pairs[:, 1]].transpose()
 
-    X = sparse.hstack((user_features, movie_features))
-    return X.tocsr()
+    X = np.hstack((user_features, movie_features))
+    return X
 
 
 def make_submission(y_predict, user_movie_ids, file_name='submission',
@@ -179,31 +176,33 @@ if __name__ == '__main__':
 
     # Build the learning matrix
     rating_matrix = build_rating_matrix(user_movie_rating_triplets)
-    X_ls = create_learning_matrices(rating_matrix, training_user_movie_pairs)
+    
 
     # Build the model
     y_ls = training_labels
     start = time.time()
-    print(rating_matrix.toarray())
-    model = mf(rating_matrix.toarray(), 10, 0.0002, 0.02, 5000)
 
+    print("Factorizing matrx...")
+    matrix = load_from_csv("matrix.csv")
+    
 
+    X_ls = create_learning_matrices(matrix, training_user_movie_pairs)
+    model = model = MLPRegressor(hidden_layer_sizes=(20, ),solver='lbfgs', alpha=1e-5, random_state=1)
 
     with measure_time('Training'):
         print('Training...')
-        model.fit()
+        model.fit(X_ls,y_ls)
 
-    print(model.mse())
 
     # ------------------------------ Prediction ------------------------------ #
     # Load test data
     test_user_movie_pairs = load_from_csv(os.path.join(prefix, 'data_test.csv'))
 
     # Build the prediction matrix
-    X_ts = create_learning_matrices(rating_matrix, test_user_movie_pairs)
+    X_ts = create_learning_matrices(matrix, test_user_movie_pairs)
 
     # Predict
-    y_pred = model.predict(test_user_movie_pairs)
+    y_pred = model.predict(X_ts)
 
     # Making the submission file
     fname = make_submission(y_pred, test_user_movie_pairs, 'Lamborelle_Renaud_Vandegar')
