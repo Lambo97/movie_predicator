@@ -184,7 +184,7 @@ if __name__ == '__main__':
     y_ls = training_labels
     start = time.time()
 
-    model = MoviePredicator(rating_matrix.toarray(),K=20)
+    model = MoviePredicator(rating_matrix.toarray(),K=200,load =False)
     
     with measure_time('Training'):
         print('Training...')
