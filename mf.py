@@ -89,7 +89,7 @@ class MF(BaseEstimator, ClassifierMixin):
         """
         return self.b + self.b_u[:,np.newaxis] + self.b_i[np.newaxis:,] + self.P.dot(self.Q.T)
 
-    def predict(self, X_ts, rating_matrix):
+    def predict(self, X_ts):
         """
         Predict the ratings for all user_id/movie_id ratings
 
@@ -101,10 +101,9 @@ class MF(BaseEstimator, ClassifierMixin):
         - y_ts : array(n_samples, 1)
                 the ratings for all samples
         """
-        #matrix_full = self.full_matrix()
-        matrix_full = rating_matrix
+        matrix_full = self.full_matrix()
         y_ts = np.zeros((np.shape(X_ts)[0]))
         for i,x in enumerate(X_ts):
-            y_ts[i] = matrix_full[x[0]-1,x[1]-1]
+            y_ts[i] = matrix_full[x[0],x[1]]
 
         return y_ts

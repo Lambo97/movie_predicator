@@ -184,24 +184,22 @@ if __name__ == '__main__':
     y_ls = training_labels
     start = time.time()
 
-    model = MoviePredicator(rating_matrix.toarray())
+    model = MoviePredicator(rating_matrix.toarray(),K=20)
     
     with measure_time('Training'):
         print('Training...')
         print(TwoFoldCrossValidation(model, training_user_movie_pairs, y_ls))
+        model.fit(training_user_movie_pairs,y_ls)
 
-    """
+    
     # ------------------------------ Prediction ------------------------------ #
     # Load test data
     test_user_movie_pairs = load_from_csv(os.path.join(prefix, 'data_test.csv'))
 
-    # Build the prediction matrix
-    X_ts = create_learning_matrices(matrix, test_user_movie_pairs)
-
     # Predict
-    y_pred = model.predict(X_ts)
+    y_pred = model.predict(test_user_movie_pairs)
 
     # Making the submission file
     fname = make_submission(y_pred, test_user_movie_pairs, 'Lamborelle_Renaud_Vandegar')
     print('Submission file "{}" successfully written'.format(fname))
-    """
+    

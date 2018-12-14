@@ -8,7 +8,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 class MoviePredicator(BaseEstimator, ClassifierMixin):
 
-    def __init__(self, rating_matrix):
+    def __init__(self, rating_matrix = None, K = 100):
         """
         Perform matrix factorization to predict empty
         entries in a matrix.
@@ -17,21 +17,24 @@ class MoviePredicator(BaseEstimator, ClassifierMixin):
         - R (ndarray)   : user-item rating matrix
         """
         self.rating_matrix = rating_matrix
+        self.K = K
 
     def fit(self, X, y):
-        
-        #matrix_factorization = MF(self.rating_matrix, 20, 1e-5, 0.02, 5000).fit()
-        #matrix = matrix_factorization.full_matrix()
-        self.matrix = load_from_csv("matrix.csv")
-        X_ls = create_learning_matrices(self.matrix, X)
-        #self.model = MLPRegressor(solver='lbfgs', alpha=1e-5, random_state=1)
-        self.model = GradientBoostingRegressor(max_depth= 5)
+        if(self.rating_matrix is None):
+            matrix_factorization = MF(self.rating_matrix, self.K, 1e-5, 0.02, 5000).fit()
+            self.rating_matrix = matrix_factorization.full_matrix()
+            np.savetxt("matrix_K{}.csv".format(self.K), self.rating_matrix)
+        else:
+            self.rating_matrix = load_from_csv("matrix_K{}.csv".format(self.K))
+        X_ls = create_learning_matrices(self.rating_matrix, X)
+        self.model = MLPRegressor(solver='lbfgs', alpha=1e-5, random_state=1)
+        #self.model = GradientBoostingRegressor(max_depth= 2)
         self.model.fit(X_ls, y)
 
         return self
 
     def predict(self, X):
-        X_ts = create_learning_matrices(self.matrix, X)
+        X_ts = create_learning_matrices(self.rating_matrix, X)
         return self.model.predict(X_ts)
 
 def create_learning_matrices(rating_matrix, user_movie_pairs):
