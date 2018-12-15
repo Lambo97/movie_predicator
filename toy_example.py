@@ -14,6 +14,7 @@ from sklearn.neural_network import MLPRegressor
 from mf import MF as mf
 from cross_val import TwoFoldCrossValidation
 from nmf_other import MoviePredicator
+import pickle
 
 
 @contextmanager
@@ -183,13 +184,13 @@ if __name__ == '__main__':
     # Build the model
     y_ls = training_labels
     start = time.time()
-
-    model = MoviePredicator(rating_matrix.toarray(),K=200,load =False)
+    model = MoviePredicator(rating_matrix,K=200,load =True)
     
     with measure_time('Training'):
         print('Training...')
-        print(TwoFoldCrossValidation(model, training_user_movie_pairs, y_ls))
         model.fit(training_user_movie_pairs,y_ls)
+        print(TwoFoldCrossValidation(model, training_user_movie_pairs, y_ls))
+        
 
     
     # ------------------------------ Prediction ------------------------------ #
@@ -200,6 +201,6 @@ if __name__ == '__main__':
     y_pred = model.predict(test_user_movie_pairs)
 
     # Making the submission file
-    fname = make_submission(y_pred, test_user_movie_pairs, 'Lamborelle_Renaud_Vandegar')
+    fname = make_submission(y_pred, test_user_movie_pairs, 'K_200_MLP_100')
     print('Submission file "{}" successfully written'.format(fname))
     

@@ -3,8 +3,8 @@ import pandas as pd
 from mf import MF
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.neural_network import MLPRegressor
-from sklearn.ensemble import GradientBoostingRegressor
-
+from sklearn.ensemble import AdaBoostRegressor
+import pickle
 
 class MoviePredicator(BaseEstimator, ClassifierMixin):
 
@@ -26,17 +26,17 @@ class MoviePredicator(BaseEstimator, ClassifierMixin):
             self.rating_matrix = self.matrix_factorization.full_matrix()
             np.savetxt("matrix_K{}.csv".format(self.K), self.rating_matrix)
         else:
-            self.rating_matrix = load_from_csv("matrix_K{}.csv".format(self.K))
+            self.rating_matrix = load_from_csv("matrix_K{}.csv".format(self.K), delimiter=' ')
         X_ls = create_learning_matrices(self.rating_matrix, X)
-        #self.model = MLPRegressor(solver='lbfgs', alpha=1e-5, random_state=1)
-        #self.model = GradientBoostingRegressor(max_depth= 2)
-        #self.model.fit(X_ls, y)
+        self.model = MLPRegressor(hidden_layer_sizes=(50,), solver='lbfgs', alpha=1e-5, random_state=1)
+        #self.model = GradientBoostingRegressor(max_depth= 5)
+        self.model.fit(X_ls, y)
 
         return self
 
     def predict(self, X):
         X_ts = create_learning_matrices(self.rating_matrix, X)
-        return self.matrix_factorization.predict(X_ts)
+        return self.model.predict(X_ts)
 
 def create_learning_matrices(rating_matrix, user_movie_pairs):
     """
@@ -67,7 +67,7 @@ def create_learning_matrices(rating_matrix, user_movie_pairs):
         The learning matrix in csr sparse format
     """
     # Feature for users
-    user_features = rating_matrix[user_movie_pairs[:, 0]]
+    user_features = rating_matrix[user_movie_pairs[:, 0]-1]
 
     # Features for movies
     movie_features = rating_matrix[:, user_movie_pairs[:, 1]].transpose()

@@ -65,7 +65,7 @@ def make_submission(y_predict, user_movie_ids, file_name='submission',
     return file_name
 
 
-data = load_from_csv("Lamborelle_Renaud_Vandegar_12-12-2018_13h32.csv")
+data = load_from_csv("Lamborelle_Renaud_Vandegar_14-12-2018_10h41.csv")
 result = np.zeros(np.shape(data)[0])
 for i,d in enumerate(data):
     if(d[1] >= 5):
