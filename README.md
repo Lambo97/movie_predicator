@@ -1,5 +1,8 @@
 # Movie Predicator
 
+## Link of the google sheet
+[Link of the google sheet for the results](https://l.messenger.com/l.php?u=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F10FkCPEEYKRp5yjcD5YL-PWWa6IFgdLQY5femCo6WkJk%2Fedit%3Fusp%3Dsharing&h=AT30KiEKCzeCNIROwPj6xWiBTCRmjLaBrwFNoStCbA1EkUcc29KYEUlLRpjWKYQ2c7kD1i4lBq5-KWlwgsY0nJYYddwsAkWWgIhTfpDPyfDEipZNWL4_B8pIBV7z3UVKe0JtVbUj66LjtzqZZszSWGX0)
+
 ## Introduction
 
 This competition is organized in the context of the "introduction to Machine Learning" course (ELEN0062) at the University of Liège, Belgium. The goal of the competition is to let you apply the methods and principles exposed in the theoretical course in order to address a real problem: Predict the rating of a movie by a user. 
